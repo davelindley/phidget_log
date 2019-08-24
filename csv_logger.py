@@ -48,7 +48,7 @@ def calculate_doneness(readings_per_minute=2):
     total_doneness = 0
     for record in time_temp_list:
         total_doneness += (
-            0.00000000000000007048 * record[0] ^ 7.29007299056
+            0.00000000000000007048 * ((float(record[0])*9/5 + 32) ** 7.29007299056)
         ) / readings_per_minute
 
     return total_doneness, time_temp_list
@@ -58,12 +58,11 @@ def calculate_doneness(readings_per_minute=2):
 def log_to_csv(self, temperature):
     """
     This function is used as a mixin for the Phidget class - i.e. it will be used inside that class at runtime.
-
     :param self: parent object
     :param temperature: temp float which gets passed in by parent
     :return:
     """
-    temperature = temperature * 9 / 5 + 32
+    # temperature = temperature * 9 / 5 + 32
     time = ms_since_epoch()
 
     print(f"temperature {time}---> {temperature}")
@@ -73,7 +72,7 @@ def log_to_csv(self, temperature):
         writer.writerow([temperature, time])
 
     doneness, time_temp_list = calculate_doneness()
-    print(doneness)
+    print(f'doneness is {doneness}')
 
     # to send a text every 10 minutes.
     if len(time_temp_list)%20 == 0:
@@ -86,7 +85,6 @@ def log_to_csv(self, temperature):
 
 def configure_phidget(serial=542_616, hub=0, channel=0):
     """
-
     :param serial: Serial Number as int
     :param hub: Is this connected to a hub? 1:Yes, 0:No
     :param channel: Channel 0 is Thermocouple. 1 is Board.
