@@ -48,10 +48,10 @@ def calculate_doneness(readings_per_minute=2):
     total_doneness = 0
     for record in time_temp_list:
         total_doneness += (
-            0.00000000000000007048 * record[1] ^ 7.29007299056
+            0.00000000000000007048 * record[0] ^ 7.29007299056
         ) / readings_per_minute
 
-    return total_doneness
+    return total_doneness, time_temp_list
 
 
 
@@ -70,10 +70,9 @@ def log_to_csv(self, temperature):
 
     with open(log_file, "a+") as output_file:
         writer = csv.writer(output_file)
-        writer.writerow([time, temperature])
+        writer.writerow([temperature, time])
 
-    time_temp_list.append((time, temperature))
-    doneness = calculate_doneness()
+    doneness, time_temp_list = calculate_doneness()
     print(doneness)
 
     # to send a text every 10 minutes.
