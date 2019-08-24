@@ -48,11 +48,13 @@ def calculate_doneness(readings_per_minute=2):
     time_temp_list = [i for i in time_temp_list if i]
     total_doneness = 0
     for record in time_temp_list:
+        velocity =  0.00000000000000007048 * (record[3] ** 7.29007299056)
+
         total_doneness += (
-            0.00000000000000007048 * (record[3] ** 7.29007299056) / readings_per_minute
+            velocity / readings_per_minute
         )
 
-    return total_doneness, time_temp_list
+    return total_doneness, time_temp_list, velocity
 
 
 def log_to_csv(self, temperature, channel_number):
@@ -67,12 +69,12 @@ def log_to_csv(self, temperature, channel_number):
 
     print(f"temperature {timestamp}---> {temperature}")
 
-    doneness, time_temp_list = calculate_doneness()
+    doneness, time_temp_list, velocity = calculate_doneness()
 
     with open(f"{log_file}+'_'+{channel_number}+'.csv", "a+") as output_file:
         writer = csv.writer(output_file)
         writer.writerow(
-            [len(time_temp_list), channel_number, timestamp, temperature, doneness]
+            [len(time_temp_list), channel_number, timestamp, temperature, velocity, doneness]
         )
 
     print(f"doneness is {doneness} for channel {channel_number}")
