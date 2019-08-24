@@ -13,6 +13,8 @@ import time
 from datetime import datetime
 import csv
 
+time_temp_list = []
+
 
 def ms_since_epoch():
     """
@@ -31,6 +33,12 @@ def onAttachHandler(self):
     self.setDataInterval(30000)
     self.setTemperatureChangeTrigger(0.0)
 
+def calculate_doneness(readings_per_minute=2):
+    total_doneness = 0
+    for record in time_temp_list:
+        total_doneness += (0.00000000000000007048 * record[1] ^ 7.29007299056) / readings_per_minute
+    return total_doneness
+
 
 def log_to_csv(self, temperature):
     """
@@ -40,14 +48,20 @@ def log_to_csv(self, temperature):
     :param temperature: temp float which gets passed in by parent
     :return:
     """
-
+    temperature = temperature*9/5 + 32
+    time = ms_since_epoch()
     # doc_ref = db.collection(USER_NAME).document(cook_id).collection("data").document()
-    print(f"temperature {ms_since_epoch()}---> {temperature}")
+    print(f"temperature {time}---> {temperature}")
     # doc_ref.set({"name": ms_since_epoch(), "y": temperature, "x":ms_since_epoch()})
     with open("phidget_log.csv", "a+") as output_file:
         writer = csv.writer(output_file)
-        writer.writerow([temperature, ms_since_epoch()])
+        writer.writerow([time, temperature])
 
+    time_temp_list.append((time, temperature))
+    doneness = calculate_doneness()
+    print(doneness)
+    
+    #maybe put some twilio logic here
 
 def configure_phidget(serial=542_616, hub=0, channel=0):
     """
