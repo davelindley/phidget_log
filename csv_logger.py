@@ -14,7 +14,8 @@ from datetime import datetime
 import csv
 from Phidget22Python.send_twilio import send_twilio
 
-time_temp_list = []
+
+log_file = "phidget_log.csv"
 
 
 def ms_since_epoch():
@@ -41,12 +42,17 @@ def calculate_doneness(readings_per_minute=2):
     :param readings_per_minute: should be 60000/self.setDataInterval
     :return:
     """
+    with open(log_file, 'r') as f:
+        time_temp_list = [tuple(line) for line in csv.reader(f)]
+
     total_doneness = 0
     for record in time_temp_list:
         total_doneness += (
             0.00000000000000007048 * record[1] ^ 7.29007299056
         ) / readings_per_minute
+
     return total_doneness
+
 
 
 def log_to_csv(self, temperature):
@@ -62,7 +68,7 @@ def log_to_csv(self, temperature):
 
     print(f"temperature {time}---> {temperature}")
 
-    with open("phidget_log.csv", "a+") as output_file:
+    with open(log_file, "a+") as output_file:
         writer = csv.writer(output_file)
         writer.writerow([time, temperature])
 
@@ -73,7 +79,10 @@ def log_to_csv(self, temperature):
     # to send a text every 10 minutes.
     if len(time_temp_list)%20 == 0:
         # maybe put some twilio logic here
-        send_twilio(doneness)
+        try:
+            send_twilio(doneness)
+        except Exception as e:
+            print(e)
 
 
 def configure_phidget(serial=542_616, hub=0, channel=0):
