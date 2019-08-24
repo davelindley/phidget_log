@@ -12,6 +12,7 @@ from Phidget22.Devices.TemperatureSensor import *
 import time
 from datetime import datetime
 import csv
+from Phidget22Python.send_twilio import send_twilio
 
 time_temp_list = []
 
@@ -69,7 +70,10 @@ def log_to_csv(self, temperature):
     doneness = calculate_doneness()
     print(doneness)
 
-    # maybe put some twilio logic here
+    # to send a text every 10 minutes.
+    if len(time_temp_list)%20 == 0:
+        # maybe put some twilio logic here
+        send_twilio(doneness)
 
 
 def configure_phidget(serial=542_616, hub=0, channel=0):
