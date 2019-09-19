@@ -11,7 +11,7 @@ readings_per_minute = 2
 
 # NOTE TO DAVID
 """
-The variable "data" needs to be a pandas dataframe with data from from the phidget with the following columns:
+The variable "data" needs to be a pandas dataframe with data from the phidget with the following columns:
     DATETIME: a datetime
     INTERNAL_TEMP: a float
     CHEWS: a float
